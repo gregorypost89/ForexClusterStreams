@@ -1,4 +1,4 @@
-# Currency Pairs
+# Forex Cluster Streams
 
 ## This program uses Kafka with Zookeeper to take in currency pair data as a producer and ship to consumers
 
