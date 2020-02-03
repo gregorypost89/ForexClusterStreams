@@ -22,13 +22,13 @@ Our next two nodes cannot conflict with each other as we are running these on th
 
 ```
 config/server-1.properties:
-    broker.id=**1**
-    listeners=**PLAINTEXT://:9093**
+    broker.id=1
+    listeners=PLAINTEXT://:9093
     log.dirs=/tmp/kafka-logs-1
 
 config/server-2.properties:
-    broker.id=**2**
-    listeners=**PLAINTEXT://:9094**
+    broker.id=2
+    listeners=PLAINTEXT://:9094
     log.dirs=/tmp/kafka-logs-2
 ```
 
