@@ -6,12 +6,16 @@
 
 We will use the Zookeeper convenience script that comes with Kafka.  We'll start by creating the single node instance.
 
-> bin/zookeeper-server-start.sh config/zookeeper.properties
+```
+bin/zookeeper-server-start.sh config/zookeeper.properties
+```
 
 Next we'll expand our cluster to three nodes.  We do this by making a config file for each broker
 
-> cp config/server.properties config/server-1.properties
-> cp config/server.properties config/server-2.properties
+```
+cp config/server.properties config/server-1.properties
+cp config/server.properties config/server-2.properties
+```
 
 When we created our single node instance, it will be running on **localhost:9092**.
 Our next two nodes cannot conflict with each other as we are running these on the same machine, so we need to edit the configuration of listeners to reflect this:
@@ -41,11 +45,16 @@ Next, we start the Kafka server with our three servers.
 We will name our topic "pairs".  
 It is good practice to have 3 replicas and 5 partitions to tolerate failure.
 
-> bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 3 --partitions 5 --topic pairs
+```
+bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 3 --partitions 5 --topic pairs
+```
 
 Test this by running the output script and we should see our topic return as a result
 
-> bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+```
+bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+```
+
 **pairs**
 
 ### Step 3 - Creating our connectors with Kafka Connect
