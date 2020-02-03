@@ -1,6 +1,6 @@
-Currency Pairs
+# H1 Currency Pairs
 
-This program uses Kafka with Zookeeper to take in currency pair data as a producer and ship to consumers
+## H2 This program uses Kafka with Zookeeper to take in currency pair data as a producer and ship to consumers
 
 Step 1 - Start the Kafka Server
 
