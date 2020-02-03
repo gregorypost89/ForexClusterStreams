@@ -1,8 +1,8 @@
-# H1 Currency Pairs
+# Currency Pairs
 
-## H2 This program uses Kafka with Zookeeper to take in currency pair data as a producer and ship to consumers
+## This program uses Kafka with Zookeeper to take in currency pair data as a producer and ship to consumers
 
-Step 1 - Start the Kafka Server
+### Step 1 - Start the Kafka Server
 
 We will use the Zookeeper convenience script that comes with Kafka.  We'll start by creating the single node instance.
 
@@ -36,7 +36,7 @@ Next, we start the Kafka server with our three servers.
 ...
 > bin/kafka-server-start.sh config/server-2.properties &
 
-Step 2 - Creating our topic
+### Step 2 - Creating our topic
 
 We will name our topic "pairs".  
 It is good practice to have 3 replicas and 5 partitions to tolerate failure.
@@ -48,7 +48,7 @@ Test this by running the output script and we should see our topic return as a r
 > bin/kafka-topics.sh --list --bootstrap-server localhost:9092
 **pairs**
 
-Step 3 - Creating our connectors with Kafka Connect
+### Step 3 - Creating our connectors with Kafka Connect
 
 We will start two connectors in standalone mode
 
@@ -82,8 +82,11 @@ topics=pairs
 
 To parse the json data, we can use **jq** which is a command line JSON processor to take our JSON input and process it in a meaningful way to be published to and consumed from our topic. 
 
-jq -rc . sampledata.json | ./kafka-console-producer --bootstrap-server localhost:9092 --topic pairs --zookeeper localhost:2181
+> jq sampledata.json | ./kafka-console-producer --bootstrap-server localhost:9092 --topic pairs --zookeeper localhost:2181
 
 (Remember to configure for your server instance.  For example, if running on Hortonworks Sandbox, configure localhost:9092 to the appropriate parameters, for example sandbox.hortonworks.com:6667)
-We can then pass a **resource configuration** (-rc) that will define how to 
+If the data is parsing incorrectly due to the JSON format, for example each dictionary is being passed individually, we can then pass a **resource configuration** (-rc) and utilize a resource configuration file that will determine how our producer processes this data
+
+> jq **-rc** . sampledata.json | ./kafka-console-producer --bootstrap-server localhost:9092 --topic pairs --zookeeper localhost:2181
+
 
