@@ -55,7 +55,7 @@ Test this by running the output script and we should see our topic return as a r
 
 ```
 bin/kafka-topics.sh --list --bootstrap-server localhost:9092
-**pairs**
+pairs
 ```
 
 ### Step 3 - Creating our connectors with Kafka Connect
@@ -102,5 +102,5 @@ jq sampledata.json | ./kafka-console-producer --bootstrap-server localhost:9092 
 If the data is parsing incorrectly due to the JSON format, for example each dictionary is being passed individually, we can then pass a **resource configuration** (-rc) and utilize a resource configuration file that will determine how our producer processes this data
 
 ```
-jq **-rc** . sampledata.json | ./kafka-console-producer --bootstrap-server localhost:9092 --topic pairs --zookeeper localhost:2181
+jq -rc . sampledata.json | ./kafka-console-producer --bootstrap-server localhost:9092 --topic pairs --zookeeper localhost:2181
 ```
