@@ -34,11 +34,13 @@ config/server-2.properties:
 
 Next, we start the Kafka server with our three servers.
 
-> bin/kafka-server-start.sh config/server.properties &
+```
+bin/kafka-server-start.sh config/server.properties &
 ...
-> bin/kafka-server-start.sh config/server-1.properties &
+bin/kafka-server-start.sh config/server-1.properties &
 ...
-> bin/kafka-server-start.sh config/server-2.properties &
+bin/kafka-server-start.sh config/server-2.properties &
+```
 
 ### Step 2 - Creating our topic
 
