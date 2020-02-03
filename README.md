@@ -55,15 +55,15 @@ Test this by running the output script and we should see our topic return as a r
 
 ```
 bin/kafka-topics.sh --list --bootstrap-server localhost:9092
-```
-
 **pairs**
+```
 
 ### Step 3 - Creating our connectors with Kafka Connect
 
 We will start two connectors in standalone mode
 
 To do this, we provide three configuration files as parameters:
+
     - connect-standalone.sh : configuration for Kafka Connect
     - connect-file-source.properties: source connector that reads lines from our input file and publishes them to the **pairs** topic
     - connect-file-sink.properties: sink connector that reads messages from the **pairs** topic and produces each line into an output file.
@@ -96,6 +96,7 @@ To parse the json data, we can use **jq** which is a command line JSON processor
 > jq sampledata.json | ./kafka-console-producer --bootstrap-server localhost:9092 --topic pairs --zookeeper localhost:2181
 
 (Remember to configure for your server instance.  For example, if running on Hortonworks Sandbox, configure localhost:9092 to the appropriate parameters, for example sandbox.hortonworks.com:6667)
+
 If the data is parsing incorrectly due to the JSON format, for example each dictionary is being passed individually, we can then pass a **resource configuration** (-rc) and utilize a resource configuration file that will determine how our producer processes this data
 
 > jq **-rc** . sampledata.json | ./kafka-console-producer --bootstrap-server localhost:9092 --topic pairs --zookeeper localhost:2181
