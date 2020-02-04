@@ -2,6 +2,38 @@
 
 ## This program uses Kafka with Zookeeper to take in currency pair data as a producer and ship to consumers
 
+### Introduction
+
+One of the major challenges of handling data in the financial world is the live nature of the market.  As traders of all markets are making decisions based on real time data, the processing that is performed on a cluster may necessitate this data to be retrieved at set intervals, whether daily, hourly, or even by the second if required.
+
+The users of an app that deal with live data also need to visualize this data in real time.  Yahoo Finance is a great example of this, where the ticker shows a stock price that increases or decreases in real time accompanied by a respective green or red highlight to indicate price movement.
+
+![TSLA Stock Price](img/tsla.gif)
+
+But how does this happen?  How does Yahoo manage to get these real time quotes and push it so quickly to their interface, so that the user can see it insantaneously?
+
+This is where **streaming** comes in; the steady, high-speed, and continuous transfer of data.   
+Tim Berglund of Confluent states, its best to think of streaming as an "unbounded, continuous real-time flow of records"¹,and this is a good approach to visualizing how streaming data can be useful in this context.
+
+The reason we use Kafka is becuase no micro-batching is involved. 
+These records don't just get stuffed in some directory or data-store somewhere and then pulled. 
+It supports up to *millisecond* latency on per-record stream processing
+Although we likely do not need this level of precision, many applications that deal with live financial data will require and depend upon this standard.
+
+Kafka is what is known as a **publish-subscribe** messaging system.
+
+In the real world, a publisher takes in information from around the world and publishes it to a newspaper or book.
+Kafka publishers act similarly.  
+The publisher is listening for specific data, like the stock price data we have above, and will publish it to a **topic** in Kafka.
+
+Think of how the newspaper has many different sections, like Sports, Finance, Politics, Food.  These are basically different topics, and there is a publisher associated with each one of these topics.  
+In Kafka, we can have the same structure.  We can set up multiple different publishers, all listening to their source of information, and publishing those to our Kafka Cluster.
+
+The intention of this repository is to take foreign exchange data from an API, where our API calls act as our stream.  
+This data which is consumed by our producer(s) into respective topics on our Kafka Cluster.
+
+In addition, there are plans to implement **stream processors** that can take these input topics and transform them into its own output topics.  A subscriber has the ability to subscribe to a topic that contains hourly price data on a currency pair, but if they were to require some calculation on this data, such as a moving average, this would require some form of stream processor to take this data and transform it in real time for the subscriber to access.
+
 ### Step 1 - Start the Kafka Server
 
 We will use the Zookeeper convenience script that comes with Kafka.  We'll start by creating the single node instance.
