@@ -13,7 +13,7 @@ The users of an app that deal with live data also need to visualize this data in
 But how does this happen?  How does Yahoo manage to get these real time quotes and push it so quickly to their interface, so that the user can see it insantaneously?
 
 This is where **streaming** comes in; the steady, high-speed, and continuous transfer of data.   
-Tim Berglund of Confluent states, its best to think of streaming as an "unbounded, continuous real-time flow of records"¹,and this is a good approach to visualizing how streaming data can be useful in this context.
+Tim Berglund of Confluent statest that its best to think of streaming as an "unbounded, continuous real-time flow of records"¹,and this is a good approach to visualizing how streaming data can be useful in this context.
 
 The reason we use Kafka is becuase no micro-batching is involved. 
 These records don't just get stuffed in some directory or data-store somewhere and then pulled. 
