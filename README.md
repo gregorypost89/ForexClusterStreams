@@ -77,7 +77,7 @@ For our case scenario, we can set up our topics like so:
 
 Our Kafka Cluster would look something like this:
 
-![KafkaCluster](https://imgur.com/9czOrGE.gifv)
+![KafkaCluster](https://imgur.com/9czOrGE.gif)
 
 <!-- There aren't many API's that will provide just the information we need.  Most likely, these APIs are going to provide all of the scores for every NFL game, or weather for every city in the United States.  We will need some way to extract just the information we need into our cluster.  
 
