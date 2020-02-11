@@ -8,31 +8,98 @@ One of the major challenges of handling data in the financial world is the live 
 
 The users of an app that deal with live data also need to visualize this data in real time.  Yahoo Finance is a great example of this, where the ticker shows a stock price that increases or decreases in real time accompanied by a respective green or red highlight to indicate price movement.
 
-![TSLA Stock Price](img/tsla.gif)
+![TSLA Stock Price](gif/tsla.gif)
 
 But how does this happen?  How does Yahoo manage to get these real time quotes and push it so quickly to their interface, so that the user can see it insantaneously?
 
-This is where **streaming** comes in; the steady, high-speed, and continuous transfer of data.   
-Tim Berglund of Confluent statest that its best to think of streaming as an "unbounded, continuous real-time flow of records"¹,and this is a good approach to visualizing how streaming data can be useful in this context.
+This is where **streaming** comes in: the steady, high-speed, and continuous transfer of data.   
+Tim Berglund of Confluent states that its best to think of streaming as an "unbounded, continuous real-time flow of records"¹,and this is a good visual representation of what we are viewing in real time.
 
-The reason we use Kafka is becuase no micro-batching is involved. 
-These records don't just get stuffed in some directory or data-store somewhere and then pulled. 
-It supports up to *millisecond* latency on per-record stream processing
-Although we likely do not need this level of precision, many applications that deal with live financial data will require and depend upon this standard.
+******************
+This application will transform the data as it comes in
+First, we need a structure to operate upon
+So we will use Kafka
+What does this structure look like?
+******************
 
 Kafka is what is known as a **publish-subscribe** messaging system.
 
-In the real world, a publisher takes in information from around the world and publishes it to a newspaper or book.
-Kafka publishers act similarly.  
-The publisher is listening for specific data, like the stock price data we have above, and will publish it to a **topic** in Kafka.
+In this system, we have one or more servers running Kakfa.
+These servers are known as Kafka brokers, and constitute our Kafka Cluster.
 
-Think of how the newspaper has many different sections, like Sports, Finance, Politics, Food.  These are basically different topics, and there is a publisher associated with each one of these topics.  
-In Kafka, we can have the same structure.  We can set up multiple different publishers, all listening to their source of information, and publishing those to our Kafka Cluster.
+The publishers are responsible for pushing messages into our Kafka Cluster.  As an example, look at the stock trade gif above.  Imagine that as our producer, where every time the price gets updated, it pushes that input as a message into our Kafka Cluster.
+
+On the other end, our subscribers consume the data as its produced.  Think of how the Yahoo Website is actually retrieving that information in the first place to display to our monitor.  It has an app that is subscribed to that data and utilizes it to display the resulting stock prices.
+
+![Publish Subscribe Gif here](gif/kafkaSimpleLayout.gif)
+
+Now when we are pulling data from an API, we are usually pulling lots of different kinds of data.  We don't want all of this data to be pushed into our cluster, because our subscriber is only looking for very specific information from all of that data.  Also, how do we separate the data we are receiving into our cluster?  We need some way to organize the flow of information into our cluster
+
+This is where **topics** come in.  A kafka publisher can publish information into topics in our Kafka cluster to segment the information.  The subscribers then subscribe to the topics of their choice to get only the information they require. 
+
+Lets provide a scenario to make this easier to follow.
+Lets say we want to build a sports betting app.
+Suppose we have a game between the Philadelphia Eagles and Dallas Cowboys which we want to monitor
+
+In sports betting, we have a money line that indicates a wager amount and winning amount for each team.
+The favored team to win this match, lets say Dallas in this case, has a money line of -120
+This means someone must wager $120 to win $100.
+The underdog team, which is Philadelphia, has a money line of +130
+This means someone must wager $100 to win $130
+
+The weather is also a factor that can influence this money line
+Conditions at the beginning of the game are currently cloudy and subject to change.
+If it starts raining, scoring is usually less frequent.  
+This can affect the money line during the course of the game and is something sports bettors are likely to monitor as they decide where to place their future bets, so it may be a good idea to get this information.
+
+And of course, score information is essential 
+We need to be sure to include this information in real time to the users of our app.
+
+To recap, we want to pull the following information for our app
+    - Weather conditions in Philadelphia.
+    - Scoring information from the Philadelphia-Dallas game.
+    - The money line bet for both Philadelphia and Dallas.
+
+These are all things that get streamed on a live basis, so Kafka is perfect for this.  The API's we require should look something like the following:
+    - A weather API
+    - An NFL scores API
+    - A money line API
+
+Now lets say we were to push all of this information into our cluster.  If some subscriber were to try to extract data from our cluster, it would have to sort through a ton of information to sort through to get what it needs.  Maybe we want a lightweight version of our app and our subscriber only needs to pull the money line data, but it has to sort through all of the scores and weather information and waste valuable time doing so.  
+
+This is where the importance of topics comes into play and helps us efficiently organize our flows of data.
+
+For our case scenario, we can set up our topics like so:
+    - Philadelphia Weather
+    - Philadelphia Score
+    - Dallas Score
+    - PHI/DAL Money Line
+
+Our Kafka Cluster would look something like this:
+
+[gif](gif/Topics.gif)
+
+<!-- There aren't many API's that will provide just the information we need.  Most likely, these APIs are going to provide all of the scores for every NFL game, or weather for every city in the United States.  We will need some way to extract just the information we need into our cluster.  
+
+Splitting our producer stream into multiple topics helps us efficiently organize our data and pull just the information we need.
+
+The subscribers to our app will then pull the necessary information from the appropriate topic.
+
+For our case, a subscriber could subscribe to all 4 Kafka Topics.  We may have another app that only needs the money line information, so we can have that subscriber just subscribe to that information only.
+
+[gif](gifofproducertopicsubscriber) -->
+
 
 The intention of this repository is to take foreign exchange data from an API, where our API calls act as our stream.  
 This data which is consumed by our producer(s) into respective topics on our Kafka Cluster.
 
 In addition, there are plans to implement **stream processors** that can take these input topics and transform them into its own output topics.  A subscriber has the ability to subscribe to a topic that contains hourly price data on a currency pair, but if they were to require some calculation on this data, such as a moving average, this would require some form of stream processor to take this data and transform it in real time for the subscriber to access.
+
+### Getting the data into our cluster
+
+The first step is getting this data into our cluster
+
+
 
 ### Step 1 - Start the Kafka Server
 
