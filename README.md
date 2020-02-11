@@ -31,7 +31,7 @@ The publishers are responsible for pushing messages into our Kafka Cluster.  As 
 
 On the other end, our subscribers consume the data as its produced.  Think of how the Yahoo Website is actually retrieving that information in the first place to display to our monitor.  It has an app that is subscribed to that data and utilizes it to display the resulting stock prices.
 
-![Publish Subscribe Gif here](https://imgur.com/a/1ki4Ir0)
+[Imgur](https://i.imgur.com/wqwlRax.mp4)
 
 Now when we are pulling data from an API, we are usually pulling lots of different kinds of data.  We don't want all of this data to be pushed into our cluster, because our subscriber is only looking for very specific information from all of that data.  Also, how do we separate the data we are receiving into our cluster?  We need some way to organize the flow of information into our cluster
 
@@ -77,7 +77,7 @@ For our case scenario, we can set up our topics like so:
 
 Our Kafka Cluster would look something like this:
 
-[gif](https://imgur.com/a/rrVwaqj)
+[Imgur](https://i.imgur.com/SIl6Zmz.mp4)
 
 <!-- There aren't many API's that will provide just the information we need.  Most likely, these APIs are going to provide all of the scores for every NFL game, or weather for every city in the United States.  We will need some way to extract just the information we need into our cluster.  
 
