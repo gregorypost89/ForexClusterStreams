@@ -56,13 +56,19 @@ And of course, score information is essential
 We need to be sure to include this information in real time to the users of our app.
 
 To recap, we want to pull the following information for our app
+
     - Weather conditions in Philadelphia.
+
     - Scoring information from the Philadelphia-Dallas game.
+
     - The money line bet for both Philadelphia and Dallas.
 
 These are all things that get streamed on a live basis, so Kafka is perfect for this.  The API's we require should look something like the following:
+
     - A weather API
+
     - An NFL scores API
+
     - A money line API
 
 Now lets say we were to push all of this information into our cluster.  If some subscriber were to try to extract data from our cluster, it would have to sort through a ton of information to sort through to get what it needs.  Maybe we want a lightweight version of our app and our subscriber only needs to pull the money line data, but it has to sort through all of the scores and weather information and waste valuable time doing so.  
@@ -70,9 +76,13 @@ Now lets say we were to push all of this information into our cluster.  If some 
 This is where the importance of topics comes into play and helps us efficiently organize our flows of data.
 
 For our case scenario, we can set up our topics like so:
+
     - Philadelphia Weather
+
     - Philadelphia Score
+
     - Dallas Score
+    
     - PHI/DAL Money Line
 
 Our Kafka Cluster would look something like this:
