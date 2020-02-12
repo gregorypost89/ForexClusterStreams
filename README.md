@@ -13,14 +13,13 @@ The users of an app that deal with live data also need to visualize this data in
 But how does this happen?  How does Yahoo manage to get these real time quotes and push it so quickly to their interface, so that the user can see it insantaneously?
 
 This is where **streaming** comes in: the steady, high-speed, and continuous transfer of data.   
-Tim Berglund of Confluent states that its best to think of streaming as an "unbounded, continuous real-time flow of records"¹,and this is a good visual representation of what we are viewing in real time.
+Tim Berglund of Confluent states that its best to think of streaming as an 
+"unbounded, continuous real-time flow of records"¹, and this is a good visual representation of what we are viewing in real time.
 
-******************
-This application will transform the data as it comes in
-First, we need a structure to operate upon
-So we will use Kafka
+
+This application will transform the data as it comes in.
+Our architecture of choice will be Kafka.
 What does this structure look like?
-******************
 
 Kafka is what is known as a **publish-subscribe** messaging system.
 
@@ -82,12 +81,19 @@ For our case scenario, we can set up our topics like so:
     - Philadelphia Score
 
     - Dallas Score
-    
+
     - PHI/DAL Money Line
 
 Our Kafka Cluster would look something like this:
 
 ![KafkaCluster](https://imgur.com/9czOrGE.gif)
+
+The subscribers to our cluster would pull the relevant information we need.
+
+Our full app would require data from all of the topics.  But suppose we have a subscriber that just needs the money line data.  This is also possible using Kafka, and the flow of data from our topics into our cluster would look something like this.
+
+![ClusterToSubscriber](https://i.imgur.com/Qj9pjnJ.gif)
+
 
 <!-- There aren't many API's that will provide just the information we need.  Most likely, these APIs are going to provide all of the scores for every NFL game, or weather for every city in the United States.  We will need some way to extract just the information we need into our cluster.  
 
