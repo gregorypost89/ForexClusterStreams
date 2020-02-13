@@ -2,7 +2,13 @@
 
 ## This program uses Kafka with Zookeeper to take in currency pair data as a producer and ship to consumers, as well as providing indicators on live data as trading tools for currency speculators.
 
-### Introduction
+## Index
+
+#### Introduction : Summary of Kafka
+#### Part 1: Establishing the Kafka Cluster
+
+
+### Introduction: Summary of Kafka
 
 One of the major challenges of handling data in the financial world is the live nature of the market.  As traders of all markets are making decisions based on real time data, the processing that is performed on a cluster may necessitate this data to be retrieved at set intervals, whether daily, hourly, or even by the second if required.
 
@@ -94,17 +100,6 @@ Our full app would require data from all of the topics.  But suppose we have a s
 
 ![ClusterToSubscriber](https://i.imgur.com/Qj9pjnJ.gif)
 
-
-<!-- There aren't many API's that will provide just the information we need.  Most likely, these APIs are going to provide all of the scores for every NFL game, or weather for every city in the United States.  We will need some way to extract just the information we need into our cluster.  
-
-Splitting our producer stream into multiple topics helps us efficiently organize our data and pull just the information we need.
-
-The subscribers to our app will then pull the necessary information from the appropriate topic.
-
-For our case, a subscriber could subscribe to all 4 Kafka Topics.  We may have another app that only needs the money line information, so we can have that subscriber just subscribe to that information only.
-
-[gif](gifofproducertopicsubscriber) -->
-
 While subscribers to the cluster can retrieve information from topics, this information is directly consumed and not robustly stored.  This application will include indicators that rely on historical data, but we only have our cluster set up to retrieve live streaming information.  We need a method to implement historical information to from some kind of database to publish to our cluster, and also have some data store that subscribes and stores this information to another database.  
 
 This is where we implement **connectors**.  Connectors are similar in execution to publishers and subscribers, but they **connect** a data store (MongoDB, S3, text files, etc.) to Kafka.  
@@ -115,8 +110,7 @@ The **sink connector** acts like a subscriber, where it reads the information fr
 
 ![Connectors](https://i.imgur.com/ukxDm4F.gif)
 
-In addition, there are plans to implement **stream processors** that can take these input topics and transform them into its own output topics.  A subscriber has the ability to subscribe to a topic that contains hourly price data on a currency pair, but if they were to require some calculation on this data, such as a moving average, this would require some form of stream processor to take this data and transform it in real time for the subscriber to access.
-
+We will set up our Kafka server using source and sink connectors in the next section.  This will enable us to use and write data stores in conjunction with live streaming data to provide the full functionality we need.
 
 ### Important Notes
 
@@ -129,6 +123,67 @@ Because real world events like thunderstorms or hardware failures can cause havo
 When we start the Kafka server in the next section, we will step through how Zookeeper is involved.
 
 ### Step 1 - Start the Kafka Server
+
+We need to configure a few parts of our system.
+
+First, we need to make sure that our server is connected to the correct host.
+
+Since we're just using a single computer for now, we are operating on a **standalone** server.
+
+Next, we will need to configure our sink and source connectors, so that our system knows where to draw information from and write information to in our cluster.
+
+The three files we need are the following, found in the **config** directory of Kafka:
+
+    - connect-standalone.properties
+    - connect-file-source.properties
+    - connect-file-sink.properties
+
+![ConfigFiles](https://i.imgur.com/Nm5533R.png)
+
+
+**connect-standalone.properties**
+
+The server settings for the standalone server can be found here:
+
+![ServerSettings](https://i.imgur.com/hwtC1ZW.png)
+
+If running this project on a server with a different configuration, such as Hortonworks Sandbox, be sure to update this to the correct settings.
+
+Before we exit, take a look at the following section:
+
+![Converters](https://i.imgur.com/rGeLBr8.png)
+
+Kafka stores its data in what can best be explained as an "ordered, immutable sequence of records".  This log is continually appended as data flows in.  Think of how a Github user continually makes commits to some document in a repository.  The newest version of the file is uploaded, but all older files are still available and cannot be destroyed to ensure resilience.   
+
+That being said, this sequence of records is written in a strict format that Kakfa can understand, and contains a **key**, a **value**, and a **timestamp**.  Kafka cannot automatically detect what the source text is or how to interpret it. 
+
+For example, lets say we have a set of records separated by a | key, and the first record reads John | Smith | 2.9.1987.
+Kafka cannot tell which of these is the key and the value, and may view the birthdate as a timestamp and store it like so.  
+
+To avoid any potential problems like this, we need to update the **key.converter** and **value.converter** parameters to reflect the format of data we are using in our cluster.  As the source data for this project is JSON, we do not need to change anything right now.
+
+**connect-file-source.properties**
+
+The first order of business is to determine which file to use as the project source.
+Since the default configuration is JSON, we will be abiding by this format for ease of use.
+For this example, we will be using **rates.json**, which is available for download in this repository.
+This file contains sample quote data for various pairs, along with timestamps that we can write to our database through the sink connector.
+
+Now we are going to need to indicate where our source connector can find the file 
+Update the file parameter in the **connect-file-source.properties** file with the location of our source data.
+
+We can also see there is a parameter for **topics**
+We didn't need to specify a topic name until now, but we will name our topic **pairs** to reflect the currency pairs data from **rates.json** that we are using for our cluster.
+Be sure to update the **topics** parameters to equal **pairs** before proceeding.
+
+**connect-file-sink.properties**
+
+On the other end, we need to update our sink connector properties to listen to the **pairs** topic.
+As mentioned before, this connector is also responsible for taking in the data read from the provided topics and writing it to some data store.
+As a default setting this file is saved into test.sink.txt, and we can change the file destination as needed.
+
+------------------------------------------------------------------------------------------------------------------
+
 
 We will use the Zookeeper convenience script that comes with Kafka.  We'll start by creating the single node instance.
 
