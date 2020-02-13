@@ -1,6 +1,6 @@
 # Forex Cluster Streams
 
-## This program uses Kafka with Zookeeper to take in currency pair data as a producer and ship to consumers
+## This program uses Kafka with Zookeeper to take in currency pair data as a producer and ship to consumers, as well as providing indicators on live data as trading tools for currency speculators.
 
 ### Introduction
 
@@ -105,17 +105,28 @@ For our case, a subscriber could subscribe to all 4 Kafka Topics.  We may have a
 
 [gif](gifofproducertopicsubscriber) -->
 
+While subscribers to the cluster can retrieve information from topics, this information is directly consumed and not robustly stored.  This application will include indicators that rely on historical data, but we only have our cluster set up to retrieve live streaming information.  We need a method to implement historical information to from some kind of database to publish to our cluster, and also have some data store that subscribes and stores this information to another database.  
 
-The intention of this repository is to take foreign exchange data from an API, where our API calls act as our stream.  
-This data which is consumed by our producer(s) into respective topics on our Kafka Cluster.
+This is where we implement **connectors**.  Connectors are similar in execution to publishers and subscribers, but they **connect** a data store (MongoDB, S3, text files, etc.) to Kafka.  
+
+The **source connector** acts like a publisher, where it takes information from some data store and publishes it to a topic or topics in our Kafka Cluster.
+
+The **sink connector** acts like a subscriber, where it reads the information from some topic(s) in our Kafka Cluster and stores it in a database.  
+
+![Connectors](https://i.imgur.com/ukxDm4F.gif)
 
 In addition, there are plans to implement **stream processors** that can take these input topics and transform them into its own output topics.  A subscriber has the ability to subscribe to a topic that contains hourly price data on a currency pair, but if they were to require some calculation on this data, such as a moving average, this would require some form of stream processor to take this data and transform it in real time for the subscriber to access.
 
-### Getting the data into our cluster
 
-The first step is getting this data into our cluster
+### Important Notes
 
+While we now understand how this system works on a base level and we can start implementing some logic, there is something very important to keep in mind.  Our system that relies on streaming data must be resilient and avoid failure.  For example if something in our cluster goes down and publishers cannot publish data to our cluster topics, our subscribers wouldn't be able to retreive anything from these topics and this could cause massive problems, especially with financial real time data.  
 
+The project summary mentions that we use Kafka with something called **Zookeeper**, and Zookeeper is responsible for keeping everything in order across our cluster. It manages task assignment to worker nodes, monitors worker node availability, and keeps track of which node is the master node.  If the master node fails, Zookeeper lets the other nodes "race" to become the new master node, and ensures that **only one** wins that race and is locked into that master node position.
+
+Because real world events like thunderstorms or hardware failures can cause havoc across networks, it is essential that Zookeeper is managing our cluster at all times to help us recover from partial failures when they happen and ensure minimum data loss, if any, to our cluster.
+
+When we start the Kafka server in the next section, we will step through how Zookeeper is involved.
 
 ### Step 1 - Start the Kafka Server
 
